@@ -2,10 +2,14 @@ from modules.face_detector import detect_face
 from modules.frequency_analysis import frequency_analysis
 # from modules.spatial_analysis import spatial_score
 from modules.biological_analysis import biological_score
+from modules.sample import extract_frames
 
 image = "input/images/test.jpg"
-
+video = "input/videos/Sample.mp4"
 face = detect_face(image)
+extract_frames(video, "output/frames")
+
+
 
 # spatial = spatial_score(face)
 spatial = 0.7  # Placeholder value for spatial score
