@@ -1,53 +1,67 @@
+from modules.spatial_analysis_epoch import load_model
 import torch
-import torch.nn as nn
 import torchvision.transforms as transforms
-from PIL import Image
+import cv2
+import numpy as np
+import os
+import timm
 
-# Simple CNN model
-class DeepfakeCNN(nn.Module):
-    def __init__(self):
-        super(DeepfakeCNN, self).__init__()
-
-        self.conv = nn.Sequential(
-            nn.Conv2d(3, 16, 3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-
-            nn.Conv2d(16, 32, 3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(2)
-        )
-
-        self.fc = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(32 * 56 * 56, 128),
-            nn.ReLU(),
-            nn.Linear(128, 1),
-            nn.Sigmoid()
-        )
-
-    def forward(self, x):
-        x = self.conv(x)
-        x = self.fc(x)
-        return x
-
-
-# Load model
-model = DeepfakeCNN()
-
-# Image preprocessing
+# Preprocessing for CNN
 transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor()
+    transforms.ToPILImage(),
+    transforms.Resize((160, 160)),
+    transforms.ToTensor(),
 ])
 
 
-def spatial_score(image_path):
+def preprocess(face_img):
+    img = transform(face_img)
+    img = img.unsqueeze(0)  # add batch dimension
+    return img
 
-    img = Image.open(image_path).convert("RGB")
-    img = transform(img).unsqueeze(0)
 
-    with torch.no_grad():
-        prediction = model(img)
+def spatial_score(face_img):    
+    """
+    Input: face image (numpy array)
+    Output: probability score (0 to 1)
+    """
 
-    return float(prediction)
+    if face_img is None:
+        return 0.0
+
+    model =  load_model()     
+    
+
+    try:
+        img = preprocess(face_img)
+
+        with torch.no_grad():
+            output = model(img)
+
+            probs = torch.nn.functional.softmax(output, dim=1)
+
+            fake_prob = probs[0][1].item()  # class 1 = fake
+
+        return fake_prob
+
+    except Exception as e:
+        print("Spatial analysis error:", e)
+        return 0.0
+    
+def spatial_score_1(face_img):
+    if face_img is None:
+        return 0.0
+
+    try:
+        model = load_model()
+        img = transform(face_img).unsqueeze(0)
+
+        with torch.no_grad():
+            output = model(img)  # shape [1, 1]
+            fake_prob = torch.sigmoid(output[0][0]).item()  # single logit → probability
+
+        return float(fake_prob)
+
+    except Exception as e:
+        print("Spatial analysis error:", e)
+        return 0.0 

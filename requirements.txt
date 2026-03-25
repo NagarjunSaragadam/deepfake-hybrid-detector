@@ -7,3 +7,9 @@ fastapi
 uvicorn
 streamlit
 opencv-python
+torch
+torchvision
+pillow
+python-multipart
+timm
+facenet-pytorch
