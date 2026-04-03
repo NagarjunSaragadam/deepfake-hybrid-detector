@@ -1,4 +1,5 @@
-from modules.spatial_analysis_epoch import load_model
+#from modules.spatial_analysis_epoch import load_model
+from modules.model_loader import load_model
 import torch
 import torchvision.transforms as transforms
 import cv2
@@ -29,7 +30,7 @@ def spatial_score(face_img):
     if face_img is None:
         return 0.0
 
-    model =  load_model()     
+    model =  load_model()
     
 
     try:
@@ -64,4 +65,4 @@ def spatial_score_1(face_img):
 
     except Exception as e:
         print("Spatial analysis error:", e)
-        return 0.0 
+        return 0.0

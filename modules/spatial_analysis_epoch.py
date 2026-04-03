@@ -1,16 +1,16 @@
 from facenet_pytorch import InceptionResnetV1
 import torch
 import os
-
-#model_path = "resnetinceptionv1_epoch_32.pth"
-model_path = "deepfake_mode.pth"
+#model_path = r"C:\deepfake-hybrid-detector\models\xception-b5690688.pth"
+model_path = r"C:\deepfake-hybrid-detector\models\resnetinceptionv1_epoch_32.pth"
+#model_path = "C:\deepfake-hybrid-detector\models\deepfake_model.pth"
 
 model = None
 
 def load_model():
     global model
     if model is None:
-        checkpoint = torch.load(os.path.join("models", model_path), map_location="cpu")
+        checkpoint = torch.load(os.path.join("", model_path), map_location="cpu")
 
         # Use the same output as checkpoint: 1 class
         model = InceptionResnetV1(pretrained=None, classify=True, num_classes=1)

@@ -2,6 +2,7 @@ from modules.face_detector import detect_face
 from modules.frame_extractor import extract_frames
 from modules.spatial_analysis import spatial_score
 from modules.frequency_analysis import frequency_analysis
+from modules.frequency_analysis import frequency_analysis1
 from modules.biological_analysis import biological_score
 from modules.spatial_analysis import spatial_score_1
 from modules.fusion_detector import fusion_score
@@ -14,7 +15,7 @@ image_path = "input/images/test.jpg"
 video_path = "input/videos/Sample.mp4"
 frames_folder = "output/frames/"+str(uuid.uuid4())
 
-def classify(score, threshold=0.5):
+def classify(score, threshold=0.3):
     return "Deepfake" if score >= threshold else "Real"
 
 def process_video(video_path):
@@ -44,9 +45,8 @@ def process_video(video_path):
             continue
 
         # Step 4: Run analyses on each frame
-        spatial = spatial_score(face)
-        frequency = frequency_analysis(face)
-
+        spatial = spatial_score_1(face)
+        frequency = frequency_analysis1(face)
         spatial_scores.append(spatial)
         frequency_scores.append(frequency)
 
@@ -90,19 +90,20 @@ def process_image(image_path):
 
     # Step 2: Run analyses
     spatial = spatial_score_1(face)
-    frequency = frequency_analysis(face)
+    #spatial = spatial_score(face)
+    frequency = frequency_analysis1(face)
 
     # Step 3: Normalize (if not already done inside functions)
     spatial = float(spatial)
     frequency = float(frequency)
 
     # Step 4: Fusion (no biological)
-    final_score =  (0.7 * spatial) + (0.3 * frequency)
+    final_score =  (0.6 * spatial) + (0.4 * frequency)
 
     #final_score = round(final_score, 3)
 
     # Step 5: Classification
-    if final_score > 0.5:
+    if final_score > 0.30:
         result = "Real"
     else:
         result = "Deepfake"
@@ -117,4 +118,6 @@ def process_image(image_path):
         "prediction": result
     }
 
-print(process_image(image_path))
+#print(process_image(image_path))
+
+print(process_video(video_path))

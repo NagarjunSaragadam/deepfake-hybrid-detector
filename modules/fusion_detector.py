@@ -33,7 +33,7 @@ def fusion_score(spatial, frequency, biological):
      biological = float(biological)
 
      # Normalize frequency
-     frequency_norm = 1 / (1 + math.exp(-frequency / 50))
+     #frequency_norm = 1 / (1 + math.exp(-frequency / 50))
 
      # Clamp
      spatial = max(0, min(spatial, 1))
@@ -41,9 +41,9 @@ def fusion_score(spatial, frequency, biological):
 
      # Adjusted weights
      final_score = (
-         (0.3 * spatial) +
-         (0.4 * frequency_norm) +
-         (0.3 * biological)
+         (0.6 * spatial) +
+         (0.4 * frequency) +
+         (0.1 * biological)
      )
      return round(final_score, 3)
 
