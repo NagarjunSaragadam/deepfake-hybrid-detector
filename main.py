@@ -1,11 +1,11 @@
 from modules.face_detector import detect_face
 from modules.frame_extractor import extract_frames
-from modules.spatial_analysis import spatial_score
-from modules.frequency_analysis import frequency_analysis
 from modules.frequency_analysis import frequency_analysis1
 from modules.biological_analysis import biological_score
-from modules.spatial_analysis import spatial_score_1
+from modules.spatial_analysis import spatial_score, spatial_score_WithModel
 from modules.fusion_detector import fusion_score
+from modules.model_loader import load_model
+
 
 import cv2
 import os
@@ -16,7 +16,11 @@ video_path = "input/videos/Sample.mp4"
 frames_folder = "output/frames/"+str(uuid.uuid4())
 
 def classify(score, threshold=0.3):
-    return "Deepfake" if score >= threshold else "Real"
+    if round(score,2) > threshold:
+      result = "Real"
+    else:
+        result = "Deepfake"
+    return result
 
 def process_video(video_path):
     os.makedirs(frames_folder, exist_ok=True)
@@ -28,9 +32,8 @@ def process_video(video_path):
     # Step 2: Loop through frames
     spatial_scores = []
     frequency_scores = []
-    
     print("Analyzing frames...")
-
+    model = load_model()
     for file in sorted(os.listdir(frames_folder)):
 
         if not file.endswith(".jpg"):
@@ -45,7 +48,7 @@ def process_video(video_path):
             continue
 
         # Step 4: Run analyses on each frame
-        spatial = spatial_score_1(face)
+        spatial = spatial_score_WithModel(face, model)
         frequency = frequency_analysis1(face)
         spatial_scores.append(spatial)
         frequency_scores.append(frequency)

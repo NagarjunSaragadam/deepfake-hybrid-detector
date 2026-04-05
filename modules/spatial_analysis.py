@@ -20,41 +20,30 @@ def preprocess(face_img):
     img = img.unsqueeze(0)  # add batch dimension
     return img
 
-
-def spatial_score(face_img):    
-    """
-    Input: face image (numpy array)
-    Output: probability score (0 to 1)
-    """
-
-    if face_img is None:
-        return 0.0
-
-    model =  load_model()
-    
-
-    try:
-        img = preprocess(face_img)
-
-        with torch.no_grad():
-            output = model(img)
-
-            probs = torch.nn.functional.softmax(output, dim=1)
-
-            fake_prob = probs[0][1].item()  # class 1 = fake
-
-        return fake_prob
-
-    except Exception as e:
-        print("Spatial analysis error:", e)
-        return 0.0
-    
-def spatial_score_1(face_img):
+def spatial_score(face_img):
     if face_img is None:
         return 0.0
 
     try:
         model = load_model()
+        img = transform(face_img).unsqueeze(0)
+
+        with torch.no_grad():
+            output = model(img)  # shape [1, 1]
+            fake_prob = torch.sigmoid(output[0][0]).item()  # single logit → probability
+
+        return float(fake_prob)
+
+    except Exception as e:
+        print("Spatial analysis error:", e)
+        return 0.0
+
+def spatial_score_WithModel(face_img, Model):
+    if face_img is None:
+        return 0.0
+
+    try:
+        model = Model
         img = transform(face_img).unsqueeze(0)
 
         with torch.no_grad():

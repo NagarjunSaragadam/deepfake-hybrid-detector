@@ -1,17 +1,16 @@
 import torch
 import timm
+import os
+from huggingface_hub import login, whoami
 
-model_path = "C:\deepfake-hybrid-detector\models\deepfake_model.pth"
-#model_path = r"C:\deepfake-hybrid-detector\models\xception-b5690688.pth"
-
-
-def load_model():
-
+def load_model(api_key="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"):
+    if api_key:
+        login(token=api_key)
+        try:
+            user_info = whoami(token=api_key, cache=True)
+        except Exception:
+            pass # Fallback if even the whoami call fails
     model = timm.create_model("tf_efficientnet_b4", pretrained=True)
     model.classifier = torch.nn.Linear(model.classifier.in_features, 2)
-
-    #model.load_state_dict(torch.load(model_path, map_location="cpu"))
-
     model.eval()
-
     return model

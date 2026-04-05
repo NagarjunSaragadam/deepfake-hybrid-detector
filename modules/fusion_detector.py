@@ -43,7 +43,7 @@ def fusion_score(spatial, frequency, biological):
      final_score = (
          (0.6 * spatial) +
          (0.4 * frequency) +
-         (0.1 * biological)
+         (0.0 * biological)
      )
      return round(final_score, 3)
 
