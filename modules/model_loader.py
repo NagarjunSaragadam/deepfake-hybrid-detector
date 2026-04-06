@@ -3,7 +3,7 @@ import timm
 import os
 from huggingface_hub import login, whoami
 
-def load_model(api_key="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"):
+def load_model(api_key=""):
     if api_key:
         login(token=api_key)
         try:
